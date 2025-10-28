@@ -46,10 +46,10 @@ func GetConfig() (conf Config, err error) {
 	if err != nil {
 		viper.SetDefault("ENV", "local")
 		viper.SetDefault("LOGGER_LEVEL", "local")
-		viper.SetDefault("DSN", "postgres://medikaiuser:mypassword@postgres:5432/medikaidb?sslmode=disable")
+		viper.SetDefault("DSN", "postgres://enginecareuser:mypassword@postgres:5432/enginecaredb?sslmode=disable")
 		viper.SetDefault("JWT_SECRET", "our_secret_key")
 		viper.SetDefault("JWT_EXP_DURATION", 24)
-		viper.SetDefault("JWT_ISSUER", "medikai-api")
+		viper.SetDefault("JWT_ISSUER", "enginecare-api")
 		viper.SetDefault("SERVER_PORT", "4000")
 		viper.SetDefault("SERVER_READ_TIMEOUT", 15)
 		viper.SetDefault("SERVER_WRITE_TIMEOUT", 15)

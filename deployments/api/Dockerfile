@@ -23,13 +23,13 @@ RUN if [ ! -z "$GH_TOKEN" ]; then \
     fi
 
 # build binary
-RUN --mount=type=ssh CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/medikai-api ./cmd/server/main.go
+RUN --mount=type=ssh CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/enginecare-api ./cmd/server/main.go
 
 FROM alpine:3.22 AS runner
 
 WORKDIR /app
-COPY --from=builder /app/bin/medikai-api .
+COPY --from=builder /app/bin/enginecare-api .
 
 EXPOSE 4000
 
-CMD ["./medikai-api"]
+CMD ["./enginecare-api"]
