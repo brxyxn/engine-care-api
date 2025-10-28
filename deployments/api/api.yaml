@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enginecare
+  namespace: enginecare
+  labels:
+    app: enginecare
+spec:
+  selector:
+    matchLabels:
+      app: enginecare
+  template:
+    metadata:
+      labels:
+        app: enginecare
+    spec:
+      containers:
+        - name: enginecare
+          image: enginecare-image
+          ports:
+            - containerPort: 4000
