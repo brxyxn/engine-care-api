@@ -30,6 +30,6 @@ FROM alpine:3.22 AS runner
 WORKDIR /app
 COPY --from=builder /app/bin/medikai-api .
 
-EXPOSE 5000
+EXPOSE 4000
 
 CMD ["./medikai-api"]
