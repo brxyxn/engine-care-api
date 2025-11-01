@@ -1,16 +1,18 @@
 package status
 
-import "github.com/rs/zerolog"
+import (
+	"github.com/brxyxn/go-logger"
+)
 
 type Service interface {
 	Status() error
 }
 
 type service struct {
-	log *zerolog.Logger
+	log *logger.Logger
 }
 
-func NewService(log *zerolog.Logger) Service {
+func NewService(log *logger.Logger) Service {
 	return &service{log}
 }
 

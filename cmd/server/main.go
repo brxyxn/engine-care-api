@@ -25,14 +25,14 @@ import (
 )
 
 func main() {
-	conf, err := config.GetConfig()
+	cfg, err := config.GetConfig()
 	if err != nil {
 		panic(err)
 	}
 
 	opts := []logger.OptsFunc{
 		func(o *logger.Opts) {
-			o.Level = conf.LoggerLevel
+			o.Level = cfg.LoggerLevel
 		},
 	}
 
@@ -41,11 +41,13 @@ func main() {
 
 	ctx := context.Background()
 
-	//db := configDB(log, conf)
+	db := configDB(log, cfg)
 
-	r := internal.ConfigRoutes(ctx, log, conf)
+	// we will refactor to plug in more routes later
+	routes := internal.NewRoutes(ctx, cfg, log, db)
+	r := routes.ConfigRoutes()
 
-	run(r, log, conf)
+	run(r, log, cfg)
 }
 
 func configDB(log *logger.Logger, conf config.Config) *bun.DB {

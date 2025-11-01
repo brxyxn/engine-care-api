@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/rs/zerolog"
+	"github.com/brxyxn/go-logger"
 )
 
 // Logger is a middleware that logs the incoming requests.
-func Logger(logger *zerolog.Logger) func(http.Handler) http.Handler {
+func Logger(logger *logger.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		// Initialize the logger with the desired configuration.
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
