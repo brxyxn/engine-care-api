@@ -9,6 +9,7 @@ spec:
   selector:
     matchLabels:
       app: enginecare
+  replicas: 1
   template:
     metadata:
       labels:
@@ -19,3 +20,8 @@ spec:
           image: enginecare-image
           ports:
             - containerPort: 4000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: DSN
+              value: "postgres://xyxenginecareadmin:AYbhv9CIeIp2wfKLE8R2RgqE1EkoRfJMGmaug9qKUmOvRtsY5e9Bz6YOEWq4gTIc@148.230.93.96:54321/engine_care?sslmode=disable"

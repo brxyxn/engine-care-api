@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: medikai
+  labels:
+    app: postgres
+spec:
+  ports:
+    - port: 5432       # Service port (what your app connects to)
+      targetPort: 5432 # Container port inside the pod
+  selector:
+    app: postgres      # Must match the pod's labels
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: medikai
+  labels:
+      app: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: "2"
+              memory: "1512Mi"
+            requests:
+              cpu: "110m"
+              memory: "512Mi"
+          tty: true
+          stdin: true
+          ports:
+            - name: http
+              containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: medikaiuser
+            - name: POSTGRES_PASSWORD
+              value: mypassword
+            - name: POSTGRES_DB
+              value: medikaidb
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KUBERNETES_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: KUBERNETES_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: KUBERNETES_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "medikaiuser", "-d", "medikaidb"]
+            initialDelaySeconds: 25
+            periodSeconds: 25
+
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "medikaiuser", "-d", "medikaidb"]
+            initialDelaySeconds: 2
+            periodSeconds: 2
