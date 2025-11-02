@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/cmd/bun/migrations/app_public_migration.down.sql" value="60ba7307-3e2e-47a4-a744-a29cd4966420" />
+    <file url="file://$PROJECT_DIR$/cmd/bun/migrations/app_public_migration.up.sql" value="60ba7307-3e2e-47a4-a744-a29cd4966420" />
+  </component>
+</project>
