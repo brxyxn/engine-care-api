@@ -2,20 +2,18 @@ package internal
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/brxyxn/go-logger"
 	"github.com/gorilla/mux"
 	"github.com/uptrace/bun"
 
+	"github.com/brxyxn/engine-care-api/api"
 	"github.com/brxyxn/engine-care-api/config"
 	"github.com/brxyxn/engine-care-api/internal/middleware"
 	"github.com/brxyxn/engine-care-api/internal/status"
+	"github.com/brxyxn/engine-care-api/internal/users"
 	"github.com/brxyxn/engine-care-api/pkg/mwchain"
-)
-
-var (
-	POST = "POST"
-	GET  = "GET"
 )
 
 type Routes struct {
@@ -38,16 +36,33 @@ func NewRoutes(ctx context.Context, cfg config.Config, log *logger.Logger, db *b
 
 // ConfigRoutes initializes the router and sets up the routes for the API.
 func (r Routes) ConfigRoutes() *mux.Router {
+	ctx := r.ctx
+	cfg := r.cfg
+	log := r.log
+	db := r.db
+
 	// Initialize the router.
-	r.rtr = r.rtr.PathPrefix("/v1").Subrouter()
+	v1 := r.rtr.PathPrefix("/v1").Subrouter()
 
 	// Public endpoints.
-	statusHandler := status.NewHandler(r.log, r.cfg)
-	r.rtr.Handle("/status", mwchain.NewChain(middleware.Logger(r.log)).Then(statusHandler.Status())).Methods(GET)
+	statusHandler := status.NewHandler(log, cfg, db)
+	stsLog := log.With().Str("handler", "status").Logger()
+	v1.Handle("/status", mwchain.NewChain(middleware.Logger(stsLog)).Then(statusHandler.Status())).Methods(api.GET)
 
-	//authHandler := auth.NewHandler(ctx, db, log.Logger, conf)
-	//r.Handle("/register", mwchain.NewChain(middleware.Logger(log.Logger)).Then(authHandler.Register())).Methods(POST)
-	//r.Handle("/login", mwchain.NewChain(middleware.Logger(log.Logger)).Then(authHandler.Login())).Methods(POST)
+	// Private endpoints
+	u := v1.PathPrefix("/users").Subrouter()
+	usrLog := log.With().Str("handler", "users").Logger()
+	usrHandler := users.Handler(ctx, usrLog, db)
+	u.Handle("", mwchain.NewChain(middleware.Logger(usrLog)).Then(placeholder())).Methods(api.GET)
+	u.Handle("/create", mwchain.NewChain(middleware.Logger(usrLog)).Then(usrHandler.Create())).Methods(api.POST)
+	u.Handle("/by-email", mwchain.NewChain(middleware.Logger(usrLog)).Then(placeholder())).Methods(api.GET)
+	u.Handle("/by-id", mwchain.NewChain(middleware.Logger(usrLog)).Then(placeholder())).Methods(api.GET)
 
 	return r.rtr
+}
+
+func placeholder() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		api.Success[string](w, http.StatusOK, "This is a placeholder endpoint.")
+	}
 }
