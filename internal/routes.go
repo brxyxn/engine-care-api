@@ -44,13 +44,7 @@ func (r Routes) ConfigRoutes() *mux.Router {
 	status.Routes(v1, log, cfg, db)
 
 	// Private endpoints
-	u := v1.PathPrefix("/users").Subrouter()
-	usrLog := log.With().Str("handler", "users").Logger()
-	usrHandler := users.Handler(ctx, usrLog, db)
-	u.Handle("", mwchain.NewChain(middleware.Logger(usrLog)).Then(placeholder())).Methods(api.GET)
-	u.Handle("/create", mwchain.NewChain(middleware.Logger(usrLog)).Then(usrHandler.Create())).Methods(api.POST)
-	u.Handle("/by-email", mwchain.NewChain(middleware.Logger(usrLog)).Then(placeholder())).Methods(api.GET)
-	u.Handle("/by-id", mwchain.NewChain(middleware.Logger(usrLog)).Then(placeholder())).Methods(api.GET)
+	users.Routes(ctx, v1, log, db)
 
 	return r.rtr
 }
