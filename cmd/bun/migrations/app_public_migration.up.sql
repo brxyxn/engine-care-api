@@ -208,7 +208,7 @@ CREATE TABLE app.work_order_items
     name             TEXT               NOT NULL,
     qty              NUMERIC(12, 2)     NOT NULL DEFAULT 1,
     unit_price_cents BIGINT             NOT NULL DEFAULT 0,
-    tax_rate_pct     NUMERIC(5, 2)      NOT NULL DEFAULT 0,
+    tax_rate_pct     INT                NOT NULL DEFAULT 0,
     position         INT                NOT NULL DEFAULT 0,
     created_at       TIMESTAMPTZ        NOT NULL DEFAULT now(),
     updated_at       TIMESTAMPTZ        NOT NULL DEFAULT now()

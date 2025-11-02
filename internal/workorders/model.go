@@ -87,7 +87,7 @@ type Item struct {
 	Name           string          `bun:"name,notnull" json:"name"`
 	Qty            decimal.Decimal `bun:"qty,type:decimal(12,2),notnull,default:1" json:"qty"`
 	UnitPriceCents int64           `bun:"unit_price_cents,notnull,default:0" json:"unit_price_cents"`
-	TaxRatePct     decimal.Decimal `bun:"tax_rate_pct,type:decimal(5,2),notnull,default:0" json:"tax_rate_pct"`
+	TaxRatePct     int             `bun:"tax_rate_pct,notnull,default:0" json:"tax_rate_pct"`
 	Position       int             `bun:"position,notnull,default:0" json:"position"`
 	CreatedAt      time.Time       `bun:"created_at,notnull,default:now()" json:"created_at"`
 	UpdatedAt      time.Time       `bun:"updated_at,notnull,default:now()" json:"updated_at"`
