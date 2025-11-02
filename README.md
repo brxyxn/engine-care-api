@@ -37,11 +37,15 @@ This command will stop all the services that were started by Tilt.
 
 ## Project Structure
 
+- api/: RESTful API endpoints
 - cmd/: Main application entry points
+  - bun/: Database migrations
+  - server/: API server
 - internal/: Core application logic and business rules
 - pkg/: Shared libraries and utilities
 - configs/: Configuration files
 - docs/: Documentation and Postman collections
+- deployments/: Tilt/Kubernetes deployment manifests
 
 ## API Workflow
 
@@ -85,7 +89,7 @@ This command will stop all the services that were started by Tilt.
    Authorization: Bearer <stack_jwt_token>
    X-Org-Id: <organization_id>
    ```
-    - Middleware validates token, upserts `app_users`, sets GUCs
+    - Middleware validates token, upserts `users`, sets GUCs
 
 ### **Core Business Flow** (Typical work order lifecycle)
 
