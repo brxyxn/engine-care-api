@@ -8,19 +8,20 @@ import (
 )
 
 // Success writes an success message as a JSON response.
-func Success(w http.ResponseWriter, code int, messages interface{}) {
-	successJSON(w, code, messages)
+func Success[T any](w http.ResponseWriter, code int, data T) {
+	successJSON[T](w, code, data)
 }
 
 // successJSON writes the payload as JSON with the given HTTP status.
-func successJSON(w http.ResponseWriter, code int, payload interface{}) {
+func successJSON[T any](w http.ResponseWriter, code int, payload T) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
-	response := ResponseStruct{
+	response := Response[T]{
 		Code:   code,
 		Status: http.StatusText(code),
-		Data:   payload,
+		Result: payload,
+		Error:  nil,
 	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
