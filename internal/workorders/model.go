@@ -69,3 +69,16 @@ type WorkOrderItem struct {
 	CreatedAt      time.Time    `bun:"created_at,notnull,default:now()" json:"created_at"`
 	UpdatedAt      time.Time    `bun:"updated_at,notnull,default:now()" json:"updated_at"`
 }
+
+type WorkOrderEvent struct {
+	bun.BaseModel `bun:"table:work_order_events,alias:woe"`
+
+	ID          uuid.UUID        `bun:"id,pk,default:gen_random_uuid()" json:"id"`
+	WorkOrderID uuid.UUID        `bun:"work_order_id,notnull" json:"work_order_id"`
+	EventType   string           `bun:"event_type,notnull" json:"event_type"`
+	FromStatus  *WorkOrderStatus `bun:"from_status,type:work_order_status" json:"from_status,omitempty"`
+	ToStatus    *WorkOrderStatus `bun:"to_status,type:work_order_status" json:"to_status,omitempty"`
+	Message     *string          `bun:"message" json:"message,omitempty"`
+	CreatedBy   *uuid.UUID       `bun:"created_by" json:"created_by,omitempty"`
+	CreatedAt   time.Time        `bun:"created_at,notnull,default:now()" json:"created_at"`
+}
