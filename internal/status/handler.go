@@ -5,8 +5,8 @@ import (
 
 	"github.com/brxyxn/go-logger"
 
+	"github.com/brxyxn/engine-care-api/api"
 	"github.com/brxyxn/engine-care-api/config"
-	"github.com/brxyxn/engine-care-api/internal/api"
 )
 
 type Handler interface {

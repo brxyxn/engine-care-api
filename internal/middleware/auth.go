@@ -8,8 +8,8 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
+	"github.com/brxyxn/engine-care-api/api"
 	"github.com/brxyxn/engine-care-api/config"
-	"github.com/brxyxn/engine-care-api/internal/api"
 )
 
 var (
