@@ -47,7 +47,7 @@ CREATE TABLE app.users
     -- Stack Auth user id is a string; keep it as TEXT and unique
     stack_user_id TEXT UNIQUE NOT NULL,
     email         TEXT        NOT NULL, -- store for convenience/joins; keep in sync via webhook
-    display_name  TEXT,
+    display_name  TEXT        NOT NULL,
     avatar_url    TEXT,
     is_active     BOOLEAN     NOT NULL DEFAULT TRUE,
     created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
