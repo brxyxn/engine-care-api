@@ -26,13 +26,13 @@ func Auth(conf config.Config) func(http.Handler) http.Handler {
 			// Expect the header to be in the format "Bearer <token>".
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
-				api.Error(w, http.StatusUnauthorized, "Authorization header missing")
+				api.Error(w, http.StatusUnauthorized, api.ErrorResponse{Message: "authorization header missing"})
 				return
 			}
 
 			parts := strings.Split(authHeader, " ")
 			if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-				api.Error(w, http.StatusUnauthorized, "Invalid Authorization header format")
+				api.Error(w, http.StatusUnauthorized, api.ErrorResponse{Message: "invalid authorization header format"})
 				return
 			}
 			tokenStr := parts[1]
@@ -48,7 +48,7 @@ func Auth(conf config.Config) func(http.Handler) http.Handler {
 				return []byte(jwtKey), nil
 			})
 			if err != nil || !token.Valid {
-				api.Error(w, http.StatusUnauthorized, ErrInvalidToken.Error())
+				api.Error(w, http.StatusUnauthorized, api.ErrorResponse{Stack: ErrInvalidToken.Error(), Message: "invalid token"})
 				return
 			}
 
