@@ -3,7 +3,7 @@ package status
 import (
 	"net/http"
 
-	"github.com/brxyxn/go-logger"
+	"github.com/rs/zerolog"
 	"github.com/uptrace/bun"
 
 	"github.com/brxyxn/engine-care-api/api"
@@ -16,12 +16,12 @@ type Handler interface {
 
 type handler struct {
 	svc Service
-	log *logger.Logger
+	log zerolog.Logger
 	cfg config.Config
 	db  *bun.DB
 }
 
-func NewHandler(log *logger.Logger, cfg config.Config, db *bun.DB) Handler {
+func NewHandler(log zerolog.Logger, cfg config.Config, db *bun.DB) Handler {
 	svc := NewService(log, db)
 	return &handler{svc, log, cfg, db}
 }

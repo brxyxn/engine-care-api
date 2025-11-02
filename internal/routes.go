@@ -2,18 +2,14 @@ package internal
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/brxyxn/go-logger"
 	"github.com/gorilla/mux"
 	"github.com/uptrace/bun"
 
-	"github.com/brxyxn/engine-care-api/api"
 	"github.com/brxyxn/engine-care-api/config"
-	"github.com/brxyxn/engine-care-api/internal/middleware"
 	"github.com/brxyxn/engine-care-api/internal/status"
 	"github.com/brxyxn/engine-care-api/internal/users"
-	"github.com/brxyxn/engine-care-api/pkg/mwchain"
 )
 
 type Routes struct {
@@ -45,9 +41,7 @@ func (r Routes) ConfigRoutes() *mux.Router {
 	v1 := r.rtr.PathPrefix("/v1").Subrouter()
 
 	// Public endpoints.
-	statusHandler := status.NewHandler(log, cfg, db)
-	stsLog := log.With().Str("handler", "status").Logger()
-	v1.Handle("/status", mwchain.NewChain(middleware.Logger(stsLog)).Then(statusHandler.Status())).Methods(api.GET)
+	status.Routes(v1, log, cfg, db)
 
 	// Private endpoints
 	u := v1.PathPrefix("/users").Subrouter()
@@ -59,10 +53,4 @@ func (r Routes) ConfigRoutes() *mux.Router {
 	u.Handle("/by-id", mwchain.NewChain(middleware.Logger(usrLog)).Then(placeholder())).Methods(api.GET)
 
 	return r.rtr
-}
-
-func placeholder() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		api.Success[string](w, http.StatusOK, "This is a placeholder endpoint.")
-	}
 }

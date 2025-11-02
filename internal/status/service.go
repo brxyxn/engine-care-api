@@ -1,7 +1,7 @@
 package status
 
 import (
-	"github.com/brxyxn/go-logger"
+	"github.com/rs/zerolog"
 	"github.com/uptrace/bun"
 )
 
@@ -10,11 +10,11 @@ type Service interface {
 }
 
 type service struct {
-	log *logger.Logger
+	log zerolog.Logger
 	db  *bun.DB
 }
 
-func NewService(log *logger.Logger, db *bun.DB) Service {
+func NewService(log zerolog.Logger, db *bun.DB) Service {
 	return &service{log, db}
 }
 
