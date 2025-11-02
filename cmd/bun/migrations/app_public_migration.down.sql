@@ -1,0 +1,22 @@
+DROP TABLE IF EXISTS app.work_order_items;
+DROP TABLE IF EXISTS app.notification_logs;
+DROP TABLE IF EXISTS app.work_order_events;
+DROP TABLE IF EXISTS app.appointment_work_orders;
+DROP TABLE IF EXISTS app.work_orders;
+DROP TABLE IF EXISTS app.appointments;
+DROP TABLE IF EXISTS app.organization_members;
+DROP TABLE IF EXISTS app.projects;
+DROP TABLE IF EXISTS public.vehicles;
+DROP TABLE IF EXISTS public.customer_phone_numbers;
+DROP TABLE IF EXISTS public.customers;
+DROP TABLE IF EXISTS app.organizations;
+DROP TABLE IF EXISTS app.users;
+DROP TABLE IF EXISTS app.user_phone_numbers;
+DROP TABLE IF EXISTS public.phone_numbers;
+
+DROP TYPE IF EXISTS app.org_role;
+DROP TYPE IF EXISTS app.work_order_status;
+DROP TYPE IF EXISTS app.work_order_priority;
+DROP TYPE IF EXISTS app.line_item_type;
+DROP TYPE IF EXISTS app.notify_channel;
+DROP TYPE IF EXISTS app.appointment_status;
