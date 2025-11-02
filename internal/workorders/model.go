@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 	"github.com/uptrace/bun"
 )
 
@@ -78,28 +79,30 @@ type WorkOrder struct {
 type Item struct {
 	bun.BaseModel `bun:"table:work_order_items,alias:woi"`
 
-	ID             uuid.UUID    `bun:"id,pk,default:gen_random_uuid()" json:"id"`
-	WorkOrderID    uuid.UUID    `bun:"work_order_id,notnull" json:"work_order_id"`
-	ItemType       LineItemType `bun:"item_type,type:line_item_type,notnull" json:"item_type"`
-	SKU            *string      `bun:"sku" json:"sku,omitempty"`
-	Name           string       `bun:"name,notnull" json:"name"`
-	Qty            float64      `bun:"qty,notnull,default:1" json:"qty"`
-	UnitPriceCents int64        `bun:"unit_price_cents,notnull,default:0" json:"unit_price_cents"`
-	TaxRatePct     float64      `bun:"tax_rate_pct,notnull,default:0" json:"tax_rate_pct"`
-	Position       int          `bun:"position,notnull,default:0" json:"position"`
-	CreatedAt      time.Time    `bun:"created_at,notnull,default:now()" json:"created_at"`
-	UpdatedAt      time.Time    `bun:"updated_at,notnull,default:now()" json:"updated_at"`
+	ID             uuid.UUID       `bun:"id,pk,default:gen_random_uuid()" json:"id"`
+	OrganizationID uuid.UUID       `bun:"organization_id,notnull" json:"organization_id"`
+	WorkOrderID    uuid.UUID       `bun:"work_order_id,notnull" json:"work_order_id"`
+	ItemType       LineItemType    `bun:"item_type,type:line_item_type,notnull" json:"item_type"`
+	SKU            *string         `bun:"sku" json:"sku,omitempty"`
+	Name           string          `bun:"name,notnull" json:"name"`
+	Qty            decimal.Decimal `bun:"qty,type:decimal(12,2),notnull,default:1" json:"qty"`
+	UnitPriceCents int64           `bun:"unit_price_cents,notnull,default:0" json:"unit_price_cents"`
+	TaxRatePct     decimal.Decimal `bun:"tax_rate_pct,type:decimal(5,2),notnull,default:0" json:"tax_rate_pct"`
+	Position       int             `bun:"position,notnull,default:0" json:"position"`
+	CreatedAt      time.Time       `bun:"created_at,notnull,default:now()" json:"created_at"`
+	UpdatedAt      time.Time       `bun:"updated_at,notnull,default:now()" json:"updated_at"`
 }
 
 type Event struct {
 	bun.BaseModel `bun:"table:work_order_events,alias:woe"`
 
-	ID          uuid.UUID  `bun:"id,pk,default:gen_random_uuid()" json:"id"`
-	WorkOrderID uuid.UUID  `bun:"work_order_id,notnull" json:"work_order_id"`
-	EventType   string     `bun:"event_type,notnull" json:"event_type"`
-	FromStatus  *Status    `bun:"from_status,type:work_order_status" json:"from_status,omitempty"`
-	ToStatus    *Status    `bun:"to_status,type:work_order_status" json:"to_status,omitempty"`
-	Message     *string    `bun:"message" json:"message,omitempty"`
-	CreatedBy   *uuid.UUID `bun:"created_by" json:"created_by,omitempty"`
-	CreatedAt   time.Time  `bun:"created_at,notnull,default:now()" json:"created_at"`
+	ID             uuid.UUID  `bun:"id,pk,default:gen_random_uuid()" json:"id"`
+	OrganizationID uuid.UUID  `bun:"organization_id,notnull" json:"organization_id"`
+	WorkOrderID    uuid.UUID  `bun:"work_order_id,notnull" json:"work_order_id"`
+	EventType      string     `bun:"event_type,notnull" json:"event_type"`
+	FromStatus     *Status    `bun:"from_status,type:work_order_status" json:"from_status,omitempty"`
+	ToStatus       *Status    `bun:"to_status,type:work_order_status" json:"to_status,omitempty"`
+	Message        *string    `bun:"message" json:"message,omitempty"`
+	CreatedBy      *uuid.UUID `bun:"created_by" json:"created_by,omitempty"`
+	CreatedAt      time.Time  `bun:"created_at,notnull,default:now()" json:"created_at"`
 }

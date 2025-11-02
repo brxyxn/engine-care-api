@@ -510,7 +510,7 @@ CREATE OR REPLACE FUNCTION app.work_order_items_recalc_trg()
 $$
 BEGIN
     PERFORM app.recalc_work_order_totals(
-            COALESCE(NEW.work_order_id, OLD.work_order_id)
+            NEW.work_order_id
             );
     RETURN COALESCE(NEW, OLD);
 END
@@ -544,8 +544,9 @@ CREATE OR REPLACE FUNCTION app.work_orders_status_event_trg()
 $$
 BEGIN
     IF TG_OP = 'UPDATE' AND NEW.status IS DISTINCT FROM OLD.status THEN
-        INSERT INTO app.work_order_events (id, work_order_id, event_type, from_status, to_status, message, created_by)
-        VALUES (gen_random_uuid(), NEW.id, 'status_changed', OLD.status, NEW.status,
+        INSERT INTO app.work_order_events (id, organization_id, work_order_id, event_type, from_status, to_status,
+                                           message, created_by)
+        VALUES (gen_random_uuid(), OLD.organization_id, NEW.id, 'status_changed', OLD.status, NEW.status,
                 format('Status changed %s → %s', OLD.status, NEW.status),
                 NEW.updated_by);
     END IF;
