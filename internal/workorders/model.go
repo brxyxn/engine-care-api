@@ -15,31 +15,15 @@ const (
 	WorkOrderPriorityNormal WorkOrderPriority = "normal"
 )
 
+type LineItemType string
+
+const (
+	LineItemTypeService LineItemType = "service"
+	LineItemTypePart    LineItemType = "part"
+	LineItemTypeFee     LineItemType = "fee"
+)
+
 type WorkOrder struct {
-	//id              UUID PRIMARY KEY             DEFAULT gen_random_uuid(),
-	//organization_id UUID                NOT NULL REFERENCES organizations (id) ON DELETE CASCADE,
-	//project_id      UUID                REFERENCES projects (id) ON DELETE SET NULL, -- optional grouping
-	//customer_id     UUID                NOT NULL REFERENCES customers (id) ON DELETE RESTRICT,
-	//vehicle_id      UUID                NOT NULL REFERENCES vehicles (id) ON DELETE RESTRICT,
-	//status          work_order_status   NOT NULL DEFAULT 'draft',
-	//priority        work_order_priority NOT NULL DEFAULT 'normal',
-	//title           TEXT                NOT NULL,
-	//description     TEXT,
-	//-- lifecycle timestamps
-	//opened_at       TIMESTAMPTZ         NOT NULL DEFAULT now(),
-	//scheduled_at    TIMESTAMPTZ,
-	//started_at      TIMESTAMPTZ,
-	//completed_at    TIMESTAMPTZ,
-	//closed_at       TIMESTAMPTZ,
-	//-- audit
-	//created_by      UUID                NOT NULL REFERENCES app_users (id) ON DELETE RESTRICT,
-	//updated_by      UUID                REFERENCES app_users (id) ON DELETE SET NULL,
-	//created_at      TIMESTAMPTZ         NOT NULL DEFAULT now(),
-	//updated_at      TIMESTAMPTZ         NOT NULL DEFAULT now(),
-	//-- quick totals (optional denormalization)
-	//subtotal_cents  BIGINT              NOT NULL DEFAULT 0,
-	//tax_cents       BIGINT              NOT NULL DEFAULT 0,
-	//total_cents     BIGINT              NOT NULL DEFAULT 0
 	bun.BaseModel `bun:"table:work_orders,alias:wo"`
 
 	ID             uuid.UUID  `bun:"id,pk,default:gen_random_uuid()" json:"id"`
@@ -68,4 +52,20 @@ type WorkOrder struct {
 	SubtotalCents int64 `bun:"subtotal_cents,notnull,default:0" json:"subtotal_cents"`
 	TaxCents      int64 `bun:"tax_cents,notnull,default:0" json:"tax_cents"`
 	TotalCents    int64 `bun:"total_cents,notnull,default:0" json:"total_cents"`
+}
+
+type WorkOrderItem struct {
+	bun.BaseModel `bun:"table:work_order_items,alias:woi"`
+
+	ID             uuid.UUID    `bun:"id,pk,default:gen_random_uuid()" json:"id"`
+	WorkOrderID    uuid.UUID    `bun:"work_order_id,notnull" json:"work_order_id"`
+	ItemType       LineItemType `bun:"item_type,type:line_item_type,notnull" json:"item_type"`
+	SKU            *string      `bun:"sku" json:"sku,omitempty"`
+	Name           string       `bun:"name,notnull" json:"name"`
+	Qty            float64      `bun:"qty,notnull,default:1" json:"qty"`
+	UnitPriceCents int64        `bun:"unit_price_cents,notnull,default:0" json:"unit_price_cents"`
+	TaxRatePct     float64      `bun:"tax_rate_pct,notnull,default:0" json:"tax_rate_pct"`
+	Position       int          `bun:"position,notnull,default:0" json:"position"`
+	CreatedAt      time.Time    `bun:"created_at,notnull,default:now()" json:"created_at"`
+	UpdatedAt      time.Time    `bun:"updated_at,notnull,default:now()" json:"updated_at"`
 }
