@@ -53,8 +53,6 @@ func main() {
 func configDB(log *logger.Logger, conf config.Config) *bun.DB {
 	pgdb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(conf.Dsn)))
 
-	log.Info().Str("dsn", conf.Dsn).Msg("connection string")
-
 	err := pgdb.Ping()
 	if err != nil {
 		log.Fatal().
