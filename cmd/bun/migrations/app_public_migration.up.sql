@@ -201,6 +201,7 @@ CREATE INDEX idx_work_orders_priority ON app.work_orders (priority);
 CREATE TABLE app.work_order_items
 (
     id               UUID PRIMARY KEY            DEFAULT gen_random_uuid(),
+    organization_id  UUID               NOT NULL,
     work_order_id    UUID               NOT NULL REFERENCES app.work_orders (id) ON DELETE CASCADE,
     item_type        app.line_item_type NOT NULL,
     sku              TEXT,
@@ -217,14 +218,15 @@ CREATE INDEX idx_items_work_order ON app.work_order_items (work_order_id);
 -- Event log for status changes and communications (for automation & audit)
 CREATE TABLE app.work_order_events
 (
-    id            UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
-    work_order_id UUID        NOT NULL REFERENCES app.work_orders (id) ON DELETE CASCADE,
-    event_type    TEXT        NOT NULL, -- e.g., status_changed, note_added, photo_uploaded, customer_notified
-    from_status   app.work_order_status,
-    to_status     app.work_order_status,
-    message       TEXT,
-    created_by    UUID        REFERENCES app.users (id) ON DELETE SET NULL,
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+    id              UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
+    organization_id UUID        NOT NULL,
+    work_order_id   UUID        NOT NULL REFERENCES app.work_orders (id) ON DELETE CASCADE,
+    event_type      TEXT        NOT NULL, -- e.g., status_changed, note_added, photo_uploaded, customer_notified
+    from_status     app.work_order_status,
+    to_status       app.work_order_status,
+    message         TEXT,
+    created_by      UUID        REFERENCES app.users (id) ON DELETE SET NULL,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX idx_events_work_order ON app.work_order_events (work_order_id);
 CREATE INDEX idx_events_type ON app.work_order_events (event_type);
@@ -436,12 +438,6 @@ CREATE POLICY orgmem_delete ON app.organization_members
         AND app.has_org_role(organization_id, ARRAY ['owner','admin'])
     );
 
--- Generic “org-scoped” template for the rest
-ALTER TABLE app.work_order_items
-    ADD COLUMN organization_id uuid;
-ALTER TABLE app.work_order_events
-    ADD COLUMN organization_id uuid;
-
 -- backfill
 UPDATE app.work_order_items i
 SET organization_id = w.organization_id
@@ -452,12 +448,6 @@ UPDATE app.work_order_events e
 SET organization_id = w.organization_id
 FROM app.work_orders w
 WHERE w.id = e.work_order_id;
-
--- not null after backfill
-ALTER TABLE app.work_order_items
-    ALTER COLUMN organization_id SET NOT NULL;
-ALTER TABLE app.work_order_events
-    ALTER COLUMN organization_id SET NOT NULL;
 
 -- keep it in sync going forward
 CREATE OR REPLACE FUNCTION app.sync_child_org_from_work_order()
@@ -763,45 +753,45 @@ CREATE POLICY apptwo_select ON app.appointment_work_orders
     FOR SELECT
     USING (
     EXISTS (SELECT 1
-           FROM app.appointments a
-           WHERE a.id = appointment_id
-             AND a.organization_id = app.current_org_id()
-             AND app.is_org_member(a.organization_id))
+            FROM app.appointments a
+            WHERE a.id = appointment_id
+              AND a.organization_id = app.current_org_id()
+              AND app.is_org_member(a.organization_id))
     );
 DROP POLICY IF EXISTS apptwo_insert ON app.appointment_work_orders;
 CREATE POLICY apptwo_insert ON app.appointment_work_orders
     FOR INSERT
     WITH CHECK (
     EXISTS (SELECT 1
-           FROM app.appointments a
-           WHERE a.id = appointment_id
-             AND a.organization_id = app.current_org_id()
-             AND app.has_org_role(a.organization_id, ARRAY ['owner','admin','manager','mechanic']))
+            FROM app.appointments a
+            WHERE a.id = appointment_id
+              AND a.organization_id = app.current_org_id()
+              AND app.has_org_role(a.organization_id, ARRAY ['owner','admin','manager','mechanic']))
     );
 DROP POLICY IF EXISTS apptwo_update ON app.appointment_work_orders;
 CREATE POLICY apptwo_update ON app.appointment_work_orders
     FOR UPDATE
     USING (
     EXISTS (SELECT 1
-           FROM app.appointments a
-           WHERE a.id = appointment_id
-             AND a.organization_id = app.current_org_id()
-             AND app.has_org_role(a.organization_id, ARRAY ['owner','admin','manager','mechanic']))
+            FROM app.appointments a
+            WHERE a.id = appointment_id
+              AND a.organization_id = app.current_org_id()
+              AND app.has_org_role(a.organization_id, ARRAY ['owner','admin','manager','mechanic']))
     )
     WITH CHECK (
     EXISTS (SELECT 1
-           FROM app.appointments a
-           WHERE a.id = appointment_id
-             AND a.organization_id = app.current_org_id()
-             AND app.has_org_role(a.organization_id, ARRAY ['owner','admin','manager','mechanic']))
+            FROM app.appointments a
+            WHERE a.id = appointment_id
+              AND a.organization_id = app.current_org_id()
+              AND app.has_org_role(a.organization_id, ARRAY ['owner','admin','manager','mechanic']))
     );
 DROP POLICY IF EXISTS apptwo_delete ON app.appointment_work_orders;
 CREATE POLICY apptwo_delete ON app.appointment_work_orders
     FOR DELETE
     USING (
     EXISTS (SELECT 1
-           FROM app.appointments a
-           WHERE a.id = appointment_id
-             AND a.organization_id = app.current_org_id()
-             AND app.has_org_role(a.organization_id, ARRAY ['owner','admin','manager','mechanic']))
+            FROM app.appointments a
+            WHERE a.id = appointment_id
+              AND a.organization_id = app.current_org_id()
+              AND app.has_org_role(a.organization_id, ARRAY ['owner','admin','manager','mechanic']))
     );

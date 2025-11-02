@@ -10,8 +10,8 @@ DROP TABLE IF EXISTS public.vehicles;
 DROP TABLE IF EXISTS public.customer_phone_numbers;
 DROP TABLE IF EXISTS public.customers;
 DROP TABLE IF EXISTS app.organizations;
-DROP TABLE IF EXISTS app.users;
 DROP TABLE IF EXISTS app.user_phone_numbers;
+DROP TABLE IF EXISTS app.users;
 DROP TABLE IF EXISTS public.phone_numbers;
 
 DROP TYPE IF EXISTS app.org_role;
